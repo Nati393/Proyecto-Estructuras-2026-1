@@ -10,4 +10,7 @@ add_executable(Proyecto_Estructuras_2026_1
         Mapa.cpp
         Mapa.h
         Ubicacion.cpp
-        Ubicacion.h)
+        Ubicacion.h
+        Pista.cpp
+        Pista.h
+)
