@@ -19,4 +19,8 @@ add_executable(Proyecto_Estructuras_2026_1
         Testigo.cpp
         Detective.h
         Detective.cpp
+        HistorialABB.cpp
+        HistorialABB.h
+        Juego.cpp
+        Juego.h
 )

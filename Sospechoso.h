@@ -1,8 +1,8 @@
 #ifndef SOSPECHOSO_H
 #define SOSPECHOSO_H
+
 #include <string>
 #include <vector>
-
 using namespace std;
 
 class Sospechoso {
@@ -12,13 +12,17 @@ public:
     vector<string> atributosRevelados;
     bool esCulpable;
 
-    //Se declara el constructor con los parámetros y el tipo
+    //Constructor vacío necesario para que unordered_map pueda crear sospechosos
+    Sospechoso();
+
+    //Constructor principal con nombre y lista de atributos
     Sospechoso(string n, vector<string> attrs);
 
-    //Se revela el sig atributo que no ha sido revelado
+    //Revela el atributo en la posición indicada y lo acumula
     string revelarAtributo(int indice);
 
-    //Devuelve atributos que ya fueron revelados
+    //Devuelve todos los atributos revelados separados por coma
     string getAtributosRevelados();
 };
+
 #endif
