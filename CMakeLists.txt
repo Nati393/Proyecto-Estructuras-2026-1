@@ -7,10 +7,16 @@ include_directories(.)
 
 add_executable(Proyecto_Estructuras_2026_1
         main.cpp
-        Mapa.cpp
-        Mapa.h
-        Ubicacion.cpp
         Ubicacion.h
-        Pista.cpp
+        Ubicacion.cpp
+        Mapa.h
+        Mapa.cpp
         Pista.h
+        Pista.cpp
+        Sospechoso.h
+        Sospechoso.cpp
+        Testigo.h
+        Testigo.cpp
+        Detective.h
+        Detective.cpp
 )

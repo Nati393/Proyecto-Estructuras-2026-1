@@ -1,16 +1,20 @@
 #include "Pista.h"
 
+//Inicializa pista con tipo y posicion
 Pista::Pista(char t, int f, int c) {
     tipo    = t;
     fila    = f;
     columna = c;
+
+    //Se agrega el nombre según el tipo
+    if      (tipo == 'H') nombre = "Huella";
+    else if (tipo == 'C') nombre = "Coartada";
+    else if (tipo == 'T') nombre = "Testimonio";
+    else if (tipo == 'P') nombre = "Prueba Forense";
+    else                  nombre = "Desconocida";
 }
 
-// retorna el nombre completo del tipo de pista.
-string Pista::getNombreTipo() const {
-    if (tipo == 'H') return "Huella";
-    if (tipo == 'C') return "Coartada";
-    if (tipo == 'T') return "Testimonio";
-    if (tipo == 'P') return "Prueba Forense";
-    return "Desconocida";
+//Retorna el nombre
+string Pista::getNombre() {
+    return nombre;
 }
