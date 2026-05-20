@@ -26,6 +26,10 @@ private:
     //Indice del atributo que se revelará en la próxima pista
     int indiceAtributoRevelado;
 
+    int filaInicial;
+
+    int colInicial;
+
     //Inicializa los 8 sospechosos en la tabla hash
     void inicializarSospechosos();
 

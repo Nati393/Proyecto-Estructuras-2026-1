@@ -44,17 +44,16 @@ void Juego::inicializarSospechosos() {
     tablaSospechosos[nombreCulpable].esCulpable = true;
 }
 
-//Ubica al detective en una celda libre aleatoria
+//Ubica al detective en una celda libre aleatoria y guarda la posición
 void Juego::posicionarDetective() {
-    int f, c;
     do {
-        f = 1 + rand() % 9;
-        c = 1 + rand() % 9;
-    } while (!mapa.posicionDisponible(f, c));
+        filaInicial = 1 + rand() % 9;
+        colInicial  = 1 + rand() % 9;
+    } while (!mapa.posicionDisponible(filaInicial, colInicial));
 
     //Marca la celda como descubierta
-    mapa.getNodo(f, c)->tipo       = TipoCelda::VACIO;
-    mapa.getNodo(f, c)->descubierta = true;
+    mapa.getNodo(filaInicial, colInicial)->tipo        = TipoCelda::VACIO;
+    mapa.getNodo(filaInicial, colInicial)->descubierta = true;
 }
 
 //Imprime nombre del detective y puntaje actual
@@ -214,7 +213,7 @@ void Juego::iniciar() {
     historial.buscarDetective(nombre);
 
     posicionarDetective();
-    detective = new Detective(nombre, 5, 5);
+    detective = new Detective(nombre, filaInicial, colInicial);
 
     char tecla;
     while (detective->pistasRecogidas < 10) {
