@@ -5,14 +5,12 @@ Sospechoso::Sospechoso() {
     nombre     = "";
     esCulpable = false;
 }
-
 //Inicializa sospechoso con su nombre y todos sus atributos físicos
 Sospechoso::Sospechoso(string n, vector<string> attrs) {
     nombre     = n;
     atributos  = attrs;
     esCulpable = false;
 }
-
 //Revela el atributo en la posición 'indice' si existe
 //Lo agrega a la lista de revelados para mostrarlo después
 string Sospechoso::revelarAtributo(int indice) {
@@ -24,7 +22,6 @@ string Sospechoso::revelarAtributo(int indice) {
     }
     return "";
 }
-
 //Une todos los atributos revelados en un solo texto con comas
 //Si no se ha revelado nada aún, devuelve "-" como en el ejemplo del profe
 string Sospechoso::getAtributosRevelados() {

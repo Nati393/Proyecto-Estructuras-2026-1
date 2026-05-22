@@ -7,6 +7,8 @@ using namespace std;
 Juego::Juego() : mapa() {
     detective              = nullptr;
     indiceAtributoRevelado = 0;
+    filaInicial            = 0;
+    colInicial             = 0;
     mapa.colocarCallejones(16);
     mapa.colocarPistas(10);
     mapa.colocarTestigos(5);
@@ -25,10 +27,10 @@ void Juego::inicializarSospechosos() {
         {"Diana",    {"baja",  "diestra",  "cabello rojo",  "piel morena", "nariz fina"}},
         {"Eduardo",  {"medio", "zurdo",    "cabello rubio", "piel clara",  "ojos verdes"}},
         {"Fernanda", {"alta",  "diestra",  "cabello rojo",  "piel clara",  "nariz fina"}},
-        {"Gonzalo",  {"alto",  "diestro",  "cabello negro",  "piel morena", "ojos cafe"}},
-        {"Hilda",    {"baja",  "zurda",    "cabello gris", "piel clara",  "nariz ancha"}},
+        {"Gonzalo",  {"alto",  "diestro",  "cabello negro", "piel morena", "ojos cafe"}},
+        {"Hilda",    {"baja",  "zurda",    "cabello gris",  "piel clara",  "nariz ancha"}},
         {"Ivan",     {"medio", "diestro",  "cabello rubio", "piel morena", "ojos azules"}},
-        {"Julia",    {"alta",  "zurda",    "cabello gris", "piel clara",  "nariz fina"}}
+        {"Julia",    {"alta",  "zurda",    "cabello gris",  "piel clara",  "nariz fina"}}
     };
 
     //Inserta los 8 en la tabla hash
@@ -56,12 +58,14 @@ void Juego::posicionarDetective() {
     mapa.getNodo(filaInicial, colInicial)->descubierta = true;
 }
 
-//Imprime nombre del detective y puntaje actual
+//Imprime nombre, puntaje y cuántas pistas lleva el detective
 void Juego::imprimirEncabezado() {
-    cout << "\n" << detective->nombre
-         << ", tu puntaje actual es: " << detective->puntaje << "\n";
+    cout << "\n========================================\n";
+    cout << "  " << detective->nombre
+         << "    Puntaje: " << detective->puntaje
+         << "    Pistas: "  << detective->pistasRecogidas << "/10\n";
+    cout << "========================================\n";
 }
-
 //Revisa qué hay en la celda actual y actúa según el tipo
 void Juego::procesarCelda() {
     Ubicacion* celda = mapa.getNodo(detective->fila, detective->columna);
@@ -71,7 +75,7 @@ void Juego::procesarCelda() {
         Pista p(celda->tipoPista, celda->fila, celda->columna);
         detective->recogerPista(p);
 
-        celda->tipo       = TipoCelda::VACIO;
+        celda->tipo        = TipoCelda::VACIO;
         celda->descubierta = true;
 
         cout << "\n!!! Encontraste una " << p.getNombre() << " !!!\n";
@@ -87,14 +91,23 @@ void Juego::procesarCelda() {
     } else if (celda->tipo == TipoCelda::TESTIGO) {
         //Agrega testigo a la cola si no ha declarado aún (punto 17)
         if (!celda->descubierta) {
-            Testigo t("Testigo", "Vi algo sospechoso en la zona...",
-                      celda->fila, celda->columna);
+            //Declaraciones variadas para que cada testigo diga algo distinto
+            vector<string> declaraciones = {
+                "Alguien preguntó por la victima en la esquina...",
+                "Escuché pasos extraños por el callejon sur...",
+                "Una figura corrió hacia el hospital esa noche...",
+                "Vi una sombra salir del café a medianoche...",
+                "Vi a alguien sospechoso cerca del archivo..."
+            };
+            //Se elige una declaracion al azar
+            string dec = declaraciones[rand() % declaraciones.size()];
+            Testigo t("Testigo", dec, celda->fila, celda->columna);
             colaTestigos.push(t);
             celda->descubierta = true;
             cout << "\nUn testigo vio algo. Presiona I para interrogarlo.\n";
         }
     } else {
-        celda->tipo       = TipoCelda::VACIO;
+        celda->tipo        = TipoCelda::VACIO;
         celda->descubierta = true;
     }
 }
@@ -108,17 +121,24 @@ void Juego::aplicarEfectoPista(Pista p) {
              << detective->puntaje << "\n";
 
     } else if (p.tipo == 'C') {
-        //Coartada: elimina 2 callejones del mapa
-        int eliminados = 0;
-        for (int f = 1; f <= 9 && eliminados < 2; f++) {
-            for (int c = 1; c <= 9 && eliminados < 2; c++) {
+        //Coartada: recoge todos los callejones y elimina 2 al azar (punto 14b)
+        vector<Ubicacion*> callejones;
+        for (int f = 1; f <= 9; f++) {
+            for (int c = 1; c <= 9; c++) {
                 Ubicacion* n = mapa.getNodo(f, c);
-                if (n->tipo == TipoCelda::CALLEJON) {
-                    n->tipo        = TipoCelda::VACIO;
-                    n->descubierta = true;
-                    eliminados++;
-                }
+                if (n->tipo == TipoCelda::CALLEJON)
+                    callejones.push_back(n);
             }
+        }
+        //Elimina 2 callejones al azar del vector
+        int eliminados = 0;
+        while (eliminados < 2 && !callejones.empty()) {
+            int idx = rand() % callejones.size();
+            callejones[idx]->tipo        = TipoCelda::VACIO;
+            callejones[idx]->descubierta = true;
+            //Quita ese callejon del vector para no repetirlo
+            callejones.erase(callejones.begin() + idx);
+            eliminados++;
         }
         cout << "Coartada usada: se eliminaron " << eliminados << " callejones.\n";
 
@@ -164,14 +184,12 @@ void Juego::aplicarEfectoPista(Pista p) {
 //Muestra tabla hash con sospechosos y atributos revelados (punto 16)
 void Juego::mostrarSospechosos() {
     cout << "\n===== SOSPECHOSOS DEL CASO =====\n";
-    //La busqueda en unordered_map es O(1) promedio (punto 18)
     for (auto& par : tablaSospechosos) {
         cout << "  " << par.first << " | caracteristicas confirmadas: "
              << par.second.getAtributosRevelados() << "\n";
     }
     cout << "================================\n";
 }
-
 //Fase de acusacion cuando se recogen las 10 pistas (punto 18)
 void Juego::faseAcusacion() {
     cout << "\n" << detective->nombre
@@ -202,6 +220,7 @@ void Juego::faseAcusacion() {
 
 //Flujo principal del juego
 void Juego::iniciar() {
+    srand(time(nullptr));
     cout << "\n========================================\n";
     cout << "       EL CASO DEL DETECTIVE            \n";
     cout << "========================================\n";

@@ -6,8 +6,6 @@ using namespace std;
 
 //Construye 121 nodos y los enlaza en 4 direcciones
 Mapa::Mapa() {
-    srand(time(nullptr));
-
     //construcción inicial
     Ubicacion* nodos[FILAS][COLUMNAS];
 
